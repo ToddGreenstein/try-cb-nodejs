@@ -1,0 +1,5 @@
+FROM node:0.12.4-onbuild
+
+ENV TRAVEL_AUTO true
+
+EXPOSE 3000
