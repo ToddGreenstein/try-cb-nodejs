@@ -1,4 +1,4 @@
-FROM node:0.12.4-onbuild
+FROM node:0.10-onbuild
 
 ENV TRAVEL_AUTO true
 
