@@ -4,7 +4,8 @@
  */
 var config = require('./../config');
 var couchbase = require('couchbase');
-var endPoint = config.couchbase.endPoint;
+var endPoint = process.env.CB_ENDPOINT || config.couchbase.endPoint;
+var n1qlService = process.env.CB_N1QL || config.couchbase.n1qlService;
 var bucket = config.couchbase.bucket;
 var myCluster = new couchbase.Cluster(endPoint);
 var ODMBucket;// = myCluster.openBucket(bucket);
@@ -15,15 +16,15 @@ var status="offline";  //offline,pending,online
 var ottoman = require('ottoman');
 
 /**
- * 
+ *
  */
 function init(done) {
     console.log({init: "check"});
     if(config.application.verbose){
-        console.log("VERBOSE:TRYING QUERY:","http://" + config.couchbase.n1qlService + "/query?statement=SELECT+name+FROM+system%3Akeyspaces")
+        console.log("VERBOSE:TRYING QUERY:","http://" + n1qlService + "/query?statement=SELECT+name+FROM+system%3Akeyspaces")
     }
     request.get({
-                    url: "http://" + config.couchbase.n1qlService + "/query?statement=SELECT+name+FROM+system%3Akeyspaces",
+                    url: "http://" + n1qlService + "/query?statement=SELECT+name+FROM+system%3Akeyspaces",
                     auth: {
                         'user': config.couchbase.user,
                         'pass': config.couchbase.password,

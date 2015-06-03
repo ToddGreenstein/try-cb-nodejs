@@ -11,11 +11,13 @@ var db=require('./../db');
 var fs = require('fs');
 var tryCount=0;
 var checkInterval=config.application.checkInterval;
+var hostname = config.couchbase.hostname || process.env.CB_HOSTNAME;
+var autoprovision = config.application.autoprovision || process.env.TRAVEL_AUTO;
 
 /**
  *
  */
-if(config.application.autoprovision){
+if(autoprovision) {
     console.log("AUTOPROVISION:INITIATED");
     provisionCB(function(err,done){
         if(err){
