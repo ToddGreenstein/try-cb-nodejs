@@ -4,8 +4,22 @@
  */
 var config = require('./../config');
 var couchbase = require('couchbase');
-var endPoint = process.env.CB_ENDPOINT || config.couchbase.endPoint;
-var n1qlService = process.env.CB_N1QL || config.couchbase.n1qlService;
+var endPoint;
+if (process.env.CB_ENDPOINT) {
+    endPoint = process.env.CB_ENDPOINT;
+} else if (process.env.CB_IP) {
+    endPoint = process.env.CB_IP + ":8091";
+} else {
+    endPoint = config.couchbase.endPoint;
+}
+var n1qlService;
+if (process.env.CB_N1QL) {
+    n1qlService = process.env.CB_N1QL;
+} else if (process.env.CB_IP) {
+    n1qlService = process.env.CB_IP + ":8093";
+} else {
+    n1qlService = config.couchbase.n1qlService;
+}
 var bucket = config.couchbase.bucket;
 var myCluster = new couchbase.Cluster(endPoint);
 var ODMBucket;// = myCluster.openBucket(bucket);

@@ -11,10 +11,17 @@ var db=require('./../db');
 var fs = require('fs');
 var tryCount=0;
 var checkInterval=config.application.checkInterval;
-var hostname = process.env.CB_HOSTNAME || config.couchbase.hostname;
+var hostname = process.env.CB_HOSTNAME || process.env.CB_IP || config.couchbase.hostname;
 var autoprovisionBucket = process.env.TRAVEL_AUTO;
 var autoprovisionCB = process.env.CB_AUTO || config.couchbase.autoprovision;
-var endPoint = process.env.CB_ENDPOINT || config.couchbase.endPoint;
+var endPoint;
+if (process.env.CB_ENDPOINT) {
+    endPoint = process.env.CB_ENDPOINT;
+} else if (process.env.CB_IP) {
+    endPoint = process.env.CB_IP + ":8091";
+} else {
+    endPoint = config.couchbase.endPoint;
+}
 
 /**
  *

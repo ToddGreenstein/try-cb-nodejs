@@ -11,8 +11,8 @@
         "indexPath": "",
         "indexType": "gsi",
         "showQuery": true,
-        "indexMemQuota": 512,
-        "dataMemQuota": 256,
+        "indexMemQuota": 1024,
+        "dataMemQuota": 512,
         "thresholdItemCount": 31565
     },
     "application": {
