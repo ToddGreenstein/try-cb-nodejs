@@ -23,7 +23,7 @@ The steps below assume you are running a standalone couchbase instance running k
 ## Docker
 Is runnable in docker
 
- - docker run -d -p 8091:8091 --name couchbase corbinu/couchbase
+ - docker run -d -p 8091:8091 --name couchbase couchbase/server:enterprise-4.0.0-beta
  - export CB_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' couchbase)
  - docker exec -it couchbase couchbase-cli node-init -c 127.0.0.1:8091 -u access -p password \
     --node-init-data-path=/opt/couchbase/var/lib/couchbase/data \
