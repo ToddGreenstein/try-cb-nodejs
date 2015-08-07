@@ -1,5 +1,6 @@
 {
     "couchbase": {
+        "autoprovision": false,
         "endPoint": "localhost:8091",
         "n1qlService": "localhost:8093",
         "hostName": "127.0.0.1",
@@ -10,8 +11,8 @@
         "indexPath": "",
         "indexType": "gsi",
         "showQuery": true,
-        "indexMemQuota": 2048,
-        "dataMemQuota": 1024,
+        "indexMemQuota": 1024,
+        "dataMemQuota": 512,
         "thresholdItemCount": 31565
     },
     "application": {

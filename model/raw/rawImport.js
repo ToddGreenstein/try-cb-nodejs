@@ -11,28 +11,48 @@ var db=require('./../db');
 var fs = require('fs');
 var tryCount=0;
 var checkInterval=config.application.checkInterval;
+var hostname = process.env.CB_HOSTNAME || process.env.CB_IP || config.couchbase.hostname;
+var autoprovisionBucket = process.env.TRAVEL_AUTO;
+var autoprovisionCB = process.env.CB_AUTO || config.couchbase.autoprovision;
+var endPoint;
+if (process.env.CB_ENDPOINT) {
+    endPoint = process.env.CB_ENDPOINT;
+} else if (process.env.CB_IP) {
+    endPoint = process.env.CB_IP + ":8091";
+} else {
+    endPoint = config.couchbase.endPoint;
+}
 
 /**
  *
  */
-if(config.application.autoprovision){
-    console.log("AUTOPROVISION:INITIATED");
+if(autoprovisionCB) {
+    console.log("AUTOPROVISION_CB:INITIATED");
     provisionCB(function(err,done){
         if(err){
-            console.log("AUTOPROVISION:ERR:FATAL:",err);
+            console.log("AUTOPROVISION_CB:ERR:FATAL:",err);
           return;
         }
         config.application.autoprovision=false;
         fs.writeFile('config.json', JSON.stringify(config,null,4),function(err){
             if(err){
-                console.log("AUTOPROVISION:ERR:FILESAVE:",err)
+                console.log("AUTOPROVISION_CB:ERR:FILESAVE:",err)
             }
         });
-        console.log("AUTOPROVISION:DONE:",done);
+        console.log("AUTOPROVISION_CB:DONE:",done);
+        return;
+    });
+} else if (autoprovisionBucket) {
+    console.log("AUTOPROVISION_BU:INITIATED");
+    provisionBu(function(err,done){
+        if(err){
+            console.log("AUTOPROVISION_BU:ERR:FATAL:",err);
+          return;
+        }
+        console.log("AUTOPROVISION_BU:DONE:",done);
         return;
     });
 }
-
 
 /**
  *
@@ -218,7 +238,7 @@ function provisionInit(done) {
         }
     }
     request.post({
-                     url: 'http://'+ config.couchbase.endPoint + '/nodes/self/controller/settings',
+                     url: 'http://'+ endPoint + '/nodes/self/controller/settings',
                      form: {path: dataPath,
                          index_path:indexPath
                      }
@@ -239,7 +259,7 @@ function provisionInit(done) {
  */
 function provisionRename(done) {
     request.post({
-                     url: 'http://'+ config.couchbase.endPoint+'/node/controller/rename',
+                     url: 'http://'+ endPoint +'/node/controller/rename',
                      form: {hostname: '127.0.0.1'
                      }
                  }, function (err, httpResponse, body) {
@@ -259,7 +279,7 @@ function provisionRename(done) {
  */
 function provisionServices(done) {
     request.post({
-                     url: 'http://'+ config.couchbase.endPoint+'/node/controller/setupServices',
+                     url: 'http://'+ endPoint+'/node/controller/setupServices',
                      form: {services:'kv,n1ql,index'
                      }
                  }, function (err, httpResponse, body) {
@@ -275,7 +295,7 @@ function provisionServices(done) {
 
 function provisionMemory(done) {
     request.post({
-                     url: 'http://'+ config.couchbase.endPoint+'/pools/default',
+                     url: 'http://'+ endPoint+'/pools/default',
                      form: {indexMemoryQuota:config.couchbase.indexMemQuota,
                          memoryQuota:config.couchbase.dataMemQuota
                      }
@@ -297,7 +317,7 @@ function provisionMemory(done) {
  */
 function provisionAdmin(done) {
     request.post({
-                     url: 'http://'+ config.couchbase.endPoint+'/settings/web',
+                     url: 'http://'+ endPoint+'/settings/web',
                      form: {password:config.couchbase.password,
                          username:config.couchbase.user,
                          port:'SAME'
@@ -319,8 +339,9 @@ function provisionAdmin(done) {
  */
 function provisionBucket(done) {
     if(config.application.dataSource=="embedded"){
+        console.log('provisioning bucket');
         request.post({
-                         url: 'http://'+ config.couchbase.endPoint+'/sampleBuckets/install',
+                         url: 'http://'+ endPoint+'/sampleBuckets/install',
                          headers: {
                              'Content-Type': 'application/x-www-form-urlencoded'
                          },
@@ -402,6 +423,35 @@ function provision(done) {
             });
         }
     });
+}
+
+function provisionBu(done){
+
+    provisionBucket(function (err, bucket) {
+        if (err) {
+            done(err, null);
+            return;
+        }
+        if (bucket) {
+            available = false;
+            isAvailable(function (ready) {
+                if (ready) {
+                    console.log({'bucket': 'built'});
+                    buidIndexes(function (err, indexed) {
+                        if (err) {
+                            done(err, null);
+                            return;
+                        }
+                        if (indexed) {
+                            done(null, {"environment": "built"});
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+    });
+
 }
 
 /**

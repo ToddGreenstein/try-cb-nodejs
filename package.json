@@ -3,6 +3,9 @@
   "version": "0.0.3",
   "description": "Sample Application for Couchbase, Node.js, Angular, and Express",
   "homepage": "http://www.couchbase.com",
+  "scripts": {
+    "start": "node app.js"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/ToddGreenstein/try-cb-nodejs.git"
@@ -13,12 +16,12 @@
     "email": "todd@couchbase.com"
   },
   "dependencies": {
-    "express": "*",
-    "couchbase": "*",
-    "body-parser": "*",
-    "request": "*",
-    "jsonwebtoken":"*",
-    "haversine":"*",
+    "express": "^4.12.4",
+    "couchbase": "^2.0.8",
+    "body-parser": "^1.12.4",
+    "request": "^2.57.0",
+    "jsonwebtoken":"^5.0.1",
+    "haversine":"^1.0.0",
     "ottoman":"git+https://github.com/couchbaselabs/node-ottoman.git#refactor"
   },
   "contributors": [
