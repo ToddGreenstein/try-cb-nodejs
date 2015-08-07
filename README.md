@@ -24,13 +24,16 @@ The steps below assume you are running a standalone couchbase instance running k
 Is runnable in docker
 
  `docker run -d -p 8091:8091 --name couchbase couchbase/server:enterprise-4.0.0-beta`
+ 
  `export CB_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' couchbase)`
+ 
  ```
     docker exec -it couchbase couchbase-cli node-init -c 127.0.0.1:8091 -u access -p password \
     --node-init-data-path=/opt/couchbase/var/lib/couchbase/data \
     --node-init-index-path=/opt/couchbase/var/lib/couchbase/data \
     --node-init-hostname=$CB_IP
  ```
+ 
  ```
  docker exec -it couchbase couchbase-cli cluster-init -c 127.0.0.1:8091 -u access -p password \
             --cluster-username=Administrator \
@@ -41,7 +44,11 @@ Is runnable in docker
             --cluster-ramsize=512
  ```
  `docker run -d --env CB_IP=$CB_IP --name cb-node-demo -p 3000:3000 corbinu/try-cb-nodejs`
- `docker exec -it couchbase couchbase-cli bucket-edit -c 127.0.0.1:8091 -u Administrator -p password --bucket=travel-sample --bucket-ramsize=512`
+ 
+ ```
+ docker exec -it couchbase couchbase-cli bucket-edit -c 127.0.0.1:8091 -u Administrator -p password \ 
+            --bucket=travel-sample --bucket-ramsize=512
+ ```
  
  Open a browser and load the url http://localhost:3000  
 
